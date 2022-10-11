@@ -7,6 +7,10 @@ from the original repo against the port to [diffusers](https://github.com/huggin
 
 This repository and notebook is written with the intent to be ran on a google colab instance. 
 To get started, create a new notebook from [main.ipynb](./main.ipynb) and run the notebook step by step.
+Take note of which cells are optional depending on if you want to download weights from the hub or use
+pre-downloaded weights mounted from google drive.
+
+The notebook runs on a colab instance with minimum high-RAM and a standard GPU.
 
 #### Weights
 
