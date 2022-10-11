@@ -1,11 +1,11 @@
 import torch
-from inference_VQ_Diffusion import VQ_Diffusion
 import PIL
 import numpy as np
+import inference_VQ_Diffusion
 
 # Must be run from root directory of microsoft/VQ-Diffusion
 
-model = VQ_Diffusion(config='configs/ithq.yaml', path='OUTPUT/pretrained_model/ithq_learnable.pth')
+model = inference_VQ_Diffusion.VQ_Diffusion(config='configs/ithq.yaml', path='OUTPUT/pretrained_model/ithq_learnable.pth')
 
 AUTOENCODER_ENCODED_OUT = "/content/autoencoder_encoded_out_orig.pt"
 AUTOENCODER_OUT = "/content/autoencoder_out_orig.pt"
