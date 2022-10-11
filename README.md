@@ -14,4 +14,8 @@ Weights are downloaded from a re-upload to the [huggingface hub](https://hugging
 instead of the links in the original repository to make downloading easier.
 
 If you don't want to re-download weights every time you spin up a new instance, you can save them to your google drive
-and mount your google drive on restart instead.
+and mount your google drive on restart instead. 
+
+Note there is no way to mount an isolated subdirectory of your google drive and this _will_ give this notebook full access 
+to your google drive. The cells which request google drive access are marked as such and can be skipped as long as the 
+weights are downloaded from the huggingface hub.
