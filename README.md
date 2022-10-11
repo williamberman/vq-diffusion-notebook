@@ -10,7 +10,7 @@ To get started, create a new notebook from [main.ipynb](./main.ipynb) and run th
 Take note of which cells are optional depending on if you want to download weights from the hub or use
 pre-downloaded weights mounted from google drive.
 
-The notebook runs on a colab instance with minimum high-RAM and a standard GPU.
+The notebook runs on a colab instance with high-RAM and standard GPU.
 
 #### Weights
 
@@ -23,3 +23,11 @@ and mount your google drive on restart instead.
 Note there is no way to mount an isolated subdirectory of your google drive and this _will_ give this notebook full access 
 to your google drive. The cells which request google drive access are marked as such and can be skipped as long as the 
 weights are downloaded from the huggingface hub.
+
+#### Notes
+
+Most of the notebook is installing dependencies. [test_vq_diffusion_orig.py](./test_vq_diffusion_orig.py) creates the
+original diffusion model and writes outputs from the autoencoder, transformer, and text encoder to the file system.
+[test_vq_diffusion_diffusers.py](./test_vq_diffusion_diffusers.py) does the same for the diffusers port. Once the
+outputs are written to the filesystem, the notebook verifies the outputs are against each other. The notebook specifies
+what are acceptable discrepancies in the outputs.
