@@ -19,30 +19,30 @@ TEXT_EMBEDDER_OUT = "/content/text_embedder_out.pt"
 
 def test_autoencoder():
     print("testing autoencoder")
-    #
+
     vqvae = pipeline.vqvae
-    #
+
     input_file_name = "/content/cat.jpg"
-    #
+
     image = PIL.Image.open(input_file_name).convert("RGB")
     image = preprocess_image(image).to(device)
-    #
+
     with torch.no_grad():
         encoded = vqvae.encode(image).latents
-        reconstructed = vqvae.decode(encoded).sample
-    #
-    reconstructed_image = postprocess_image(reconstructed)
-    #
+        # Original vq-diffusion uses the min encoding indices
+        _, _, (_, _, encoded_min_encoding_indices) = vqvae.quantize(encoded)
+        reconstructed = postprocess_image(vqvae.decode(encoded).sample)
+
     print(f"writing autoencoder encoded output to {AUTOENCODER_ENCODED_OUT}")
-    torch.save(encoded, AUTOENCODER_ENCODED_OUT)
+    torch.save(encoded_min_encoding_indices, AUTOENCODER_ENCODED_OUT)
     print("done writing autoencoder encoded output")
-    #
+
     print(f"writing autoencoder output to {AUTOENCODER_OUT}")
     torch.save(reconstructed, AUTOENCODER_OUT)
     print("done writing autoencoder output")
-    #
+
     print(f"writing autoencoder reconstructed image to {AUTOENCODER_IMAGE_OUT}")
-    reconstructed_image.save(AUTOENCODER_IMAGE_OUT)
+    PIL.Image.fromarray(reconstructed).save(AUTOENCODER_IMAGE_OUT)
     print("done writing autoencoder reconstructed image")
 
 
@@ -59,8 +59,9 @@ def preprocess_image(image):
 def postprocess_image(image):
     image = (image / 2 + 0.5).clamp(0, 1)
     image = image.cpu().permute(0, 2, 3, 1).numpy()
-    image = pipeline.numpy_to_pil(image)
-    return image[0]
+    image = (image * 255).round().astype('uint8')
+    image = image[0]
+    return image
 
 
 def test_transformer():
