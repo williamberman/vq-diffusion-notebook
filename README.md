@@ -30,7 +30,8 @@ to your google drive. The cells which request google drive access are marked as 
 weights are downloaded from the huggingface hub.
 
 #### Changes from original VQ-Diffusion
-This runs a fork of the original VQ-Diffusion repository with a few commits to assist verifying. I.e. writing intermediate
+This runs a [fork](https://github.com/williamberman/VQ-Diffusion/tree/will/changes-for-testing) 
+of the original VQ-Diffusion repository with a few commits to assist verifying. I.e. writing intermediate
 latents to disk and returning PIL objects.
 
 #### Notebook Steps
