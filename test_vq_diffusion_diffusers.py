@@ -2,6 +2,9 @@ from diffusers.pipelines import VQDiffusionPipeline
 import torch
 import PIL
 import numpy as np
+import os
+
+torch.manual_seed(0)
 
 device = 'cuda'
 
@@ -16,6 +19,10 @@ TRANSFORMER_OUT = "/content/transformer_out.pt"
 
 TEXT_EMBEDDER_TOKENIZED_OUT = "/content/text_embedder_tokenized_out.pt"
 TEXT_EMBEDDER_OUT = "/content/text_embedder_out.pt"
+
+E2E_LATENTS_OUT = "/content/e2e_latents_out"
+E2E_OUT = "/content/e2e_out.pt"
+E2E_IMAGE_OUT = "/content/e2e_out.png"
 
 def test_autoencoder():
     print("testing autoencoder")
@@ -81,7 +88,7 @@ def test_transformer():
 
     condition_embedding = torch.ones((batch_size, condition_len, 512), dtype=torch.float, device=device)
 
-    t = torch.full((batch_size,), diffusion_steps - 1, dtype=torch.long, device=device)
+    t = torch.tensor(diffusion_steps - 1, device=device, dtype=torch.long)
 
     with torch.no_grad():
         transformer_out = transformer(x_t, condition_embedding, t)
@@ -112,7 +119,25 @@ def test_text_embedder():
     torch.save(embedded, TEXT_EMBEDDER_OUT)
     print("done writing embedded output")
 
+def test_e2e():
+    print("testing e2e")
+
+    os.makedirs(E2E_LATENTS_OUT, exist_ok=True)
+
+    condition_on = "horse"
+
+    image = pipeline(condition_on, truncation_rate=0.86, callback=write_latents).images[0]
+
+    image.save(E2E_IMAGE_OUT)
+
+    torch.save(np.array(image), E2E_OUT)
+    
+    print("done testing e2e")
+
+def write_latents(_, t, x_t):
+    torch.save(x_t, f"{E2E_LATENTS_OUT}/{t}.pt")
 
 test_autoencoder()
 test_transformer()
 test_text_embedder()
+test_e2e()

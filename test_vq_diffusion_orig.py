@@ -2,6 +2,10 @@ import torch
 import PIL
 import numpy as np
 from inference_VQ_Diffusion import VQ_Diffusion
+import torch.nn.functional as F
+import os
+
+torch.manual_seed(0)
 
 # Must be run from root directory of microsoft/VQ-Diffusion
 
@@ -14,6 +18,10 @@ TRANSFORMER_OUT = "/content/transformer_out_orig.pt"
 
 TEXT_EMBEDDER_TOKENIZED_OUT = "/content/text_embedder_tokenized_out_orig.pt"
 TEXT_EMBEDDER_OUT = "/content/text_embedder_out_orig.pt"
+
+E2E_LATENTS_OUT = "/content/e2e_latents_out_orig"
+E2E_OUT = "/content/e2e_out_orig.pt"
+E2E_IMAGE_OUT = "/content/e2e_out_orig.png"
 
 device = 'cuda'
 
@@ -65,6 +73,11 @@ def test_transformer():
     with torch.no_grad():
         transformer_out = transformer(x_t, condition_embedding, t)
 
+        # In the diffusers port, we softmax the output w/in the transformer while
+        # the original version outputs the logits. We take the softmax here so we
+        # can compare the outputs
+        transformer_out = F.log_softmax(transformer_out.double(), dim=1).float()
+
     print(f"writing transformer output to {TRANSFORMER_OUT}")
     torch.save(transformer_out, TRANSFORMER_OUT)
     print("done writing transformer output")
@@ -90,7 +103,22 @@ def test_text_embedder():
     torch.save(embedded, TEXT_EMBEDDER_OUT)
     print("done writing embedded output")
 
+def test_e2e():
+    print("testing e2e")
+
+    os.makedirs(E2E_LATENTS_OUT, exist_ok=True)
+
+    condition_on = "horse"
+
+    image = model.inference_generate_sample_with_condition(condition_on, truncation_rate=0.86, save_root="RESULT", batch_size=1)[0]
+
+    image.save(E2E_IMAGE_OUT)
+
+    torch.save(np.array(image), E2E_OUT)
+    
+    print("done testing e2e")
 
 test_autoencoder()
 test_transformer()
 test_text_embedder()
+test_e2e()
