@@ -29,6 +29,10 @@ Note there is no way to mount an isolated subdirectory of your google drive and 
 to your google drive. The cells which request google drive access are marked as such and can be skipped as long as the 
 weights are downloaded from the huggingface hub.
 
+#### Changes from original VQ-Diffusion
+This runs a fork of the original VQ-Diffusion repository with a few commits to assist verifying. I.e. writing intermediate
+latents to disk and returning PIL objects.
+
 #### Notebook Steps
 
 1. Installs dependencies. 
